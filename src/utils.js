@@ -43,6 +43,12 @@ module.exports.getRentPrice = async (page)=>{
     return numeral(p.match(/([€£$][0-9,.]*)/)[1]).value() * 4.345;
 }
 
+module.exports.getFloorArea = async (page)=>{
+  return  await page.evaluate(() => {
+    if ($('.PropertyOverview__propertyOverviewDetails')[0].innerText.match(/Overall Floor Area: (.*)m2/))
+      return $('.PropertyOverview__propertyOverviewDetails')[0].innerText.match(/Overall Floor Area: (.*)m2/)[1]
+  })
+}
 
 module.exports.getNumberOfProperties = async (page)=>{
   const p = await page.evaluate(() => {
