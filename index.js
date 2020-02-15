@@ -1,3 +1,3 @@
 const search = require("./src");
 
-search();
+search.getSoldData();

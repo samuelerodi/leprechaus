@@ -60,4 +60,5 @@ module.exports.getNumberOfProperties = async (page)=>{
   return 0;
 }
 
+
 module.exports.sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));

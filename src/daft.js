@@ -80,6 +80,38 @@ module.exports.fetchRentData  = async (browser, url)=>{
   }
 }
 
+module.exports.getSoldPages = async (browser, url) => {
+  const page = await browser.newPage();
+  await page.goto(url);
+  const r = await page.evaluate(() => $('.paging').children().find('a')[$('.paging').children().length-1].href.match(/pagenum=([0-9]+)/)[1])
+  return numeral(r).value();
+}
+
+module.exports.fetchSoldData  = async (browser, url)=>{
+  const page = await browser.newPage();
+  await page.goto(url);
+  const r = await page.evaluate(() => {
+    var result = []
+    $('.priceregister-searchresult').each(function(){
+      var area = $(this).find('.priceregister-address>a')[1].innerHTML;
+      var data = $(this).find('.priceregister-dwelling-details')[0].innerText;
+      result.push({area,data});
+    })
+    return result;
+  })
+  const result = r.map(e=>{
+    const a = e.data.match(/[^|]*/g).filter(e=>!!e)
+    return {
+      area: e.area,
+      price: numeral(a[0]).value(),
+      saleDate: a[1].trim(),
+      type: a[2].trim(),
+      bedrooms: a[3] ? numeral(a[3].match(/([0-9]+) Bedroom/)[1]).value() : undefined,
+      bathrooms:a[4] ? numeral(a[4].match(/([0-9]+) Bathroom/)[1]).value() : undefined,
+    }
+  })
+  return result;
+}
 
 module.exports.searchUrls = async (browser, searchParams) => {
   const searchUrl = "https://www.daft.ie/dublin-city/houses-for-sale/?s%5Bmxp%5D=150000";
