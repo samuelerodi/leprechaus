@@ -1,6 +1,8 @@
 # IDE files
+.env
 .idea
 result.csv
+result
 
 # Logs
 logs

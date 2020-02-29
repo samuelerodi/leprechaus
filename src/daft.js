@@ -51,14 +51,14 @@ module.exports.fetchRentData  = async (browser, url)=>{
   const price = await utils.getRentPrice(page);
   const area = await page.evaluate(() => googletag.pubads().getTargeting('area_name')[0])
   const berRating = await page.evaluate(() => googletag.pubads().getTargeting('ber')[0])
-  const bedrooms = await page.evaluate(() => googletag.pubads().getTargeting('beds')[0])
   const furnished = await page.evaluate(() => googletag.pubads().getTargeting('furnished')[0])
 
-  const bathrooms = await page.evaluate(() => ($('#smi-summary-items')[0].innerText.match(/([0-9])[\s]*bath/i) || [])[1])
-  const type = await page.evaluate(() => ($('#smi-summary-items')[0].innerText.match(/(.*)\sto rent/i) || [])[1])
+  const bedrooms = await page.evaluate(() => ( $('#smi-summary-items, .PropertyOverview__propertyOverviewDetails')[0].innerText.match(/([0-9])[\s]*bed/i) || [])[1])
+  const bathrooms = await page.evaluate(() => ( $('#smi-summary-items, .PropertyOverview__propertyOverviewDetails')[0].innerText.match(/([0-9])[\s]*bath/i) || [])[1])
+  const type = await page.evaluate(() => ( $('#smi-summary-items, .QuickPropertyDetails__propertyType')[0].innerText.match(/(.*)\sto rent/i) || [])[1])
   // const floorArea = await page.evaluate(() => $('.PropertyOverview__propertyOverviewDetails')[0].innerText.match(/Overall Floor Area: (.*)m2/)[1])
-  const dateEntered = await page.evaluate(() => $('.description_extras')[0].innerText.match(/Entered\/Renewed[:]?\n([0-9\/\-.]*)/)[1])
-  const views = await page.evaluate(() => $('.description_extras')[0].innerText.match(/Property Views[:]?\n(.*)/)[1].replace(/[,|.]/,''))
+  const dateEntered = await page.evaluate(() => $('.description_extras, .PropertyStatistics__iconsContainer')[0].innerText.match(/Entered\/Renewed[:]?\n([0-9\/\-.]*)/)[1])
+  const views = await page.evaluate(() => $('.description_extras, .PropertyStatistics__iconsContainer')[0].innerText.match(/Property Views[:]?\n(.*)/)[1].replace(/[,|.]/,''))
   const phone = await utils.getPhone(page);
 
   return {
@@ -113,8 +113,8 @@ module.exports.fetchSoldData  = async (browser, url)=>{
   return result;
 }
 
-module.exports.searchUrls = async (browser, searchParams) => {
-  const searchUrl = "https://www.daft.ie/dublin-city/houses-for-sale/?s%5Bmxp%5D=150000";
+module.exports.searchUrls = async (browser, url) => {
+  const searchUrl = url;
   const page = await browser.newPage();
   await page.setRequestInterception(true);
   page.on('request', (req) => {

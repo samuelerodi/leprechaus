@@ -9,6 +9,7 @@
   "author": "SamFisherman",
   "license": "ISC",
   "dependencies": {
+    "dotenv": "^8.2.0",
     "json2csv": "^4.5.4",
     "numeral": "^2.0.6",
     "puppeteer": "^2.1.0"

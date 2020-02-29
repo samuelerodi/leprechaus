@@ -5,12 +5,11 @@ const daft = require('./daft');
 const { Parser } = require('json2csv');
 const fs = require('fs').promises;
 
-const url = "https://www.daft.ie/price-register/dublin-city/ballsbridge/?min_beds=%2A&max_beds=%2A&min_price=25000&max_price=5000000&pt_id=%2A&keyword=&search=Search+%BB"
 
 
-module.exports.getRentData = async () => {
+module.exports.getRentData = async (url) => {
   const browser = await puppeteer.launch({headless:true});
-  const urls = await  daft.searchUrls(browser, {});
+  const urls = await  daft.searchUrls(browser, url);
   console.log("Analyzing " + urls.length + " properties...");
   const result = [];
   for (var url of urls) {
@@ -20,20 +19,20 @@ module.exports.getRentData = async () => {
       console.log("Fetched: " + url)
     } catch (e) {
       console.error("Skipping: " + url)
-      // console.error(e)
+      console.error(e)
     }
   }
   console.log("Fetched: " + result.length + " properties");
   console.log("Skipped: " + (urls.length - result.length) + " properties");
-  await saveData(result);
+  await saveData(result, "rent");
   await browser.close();
 }
 
 
 
-module.exports.getSaleData = async () => {
+module.exports.getSaleData = async (url) => {
   const browser = await puppeteer.launch({headless:true});
-  const urls = await  daft.searchUrls(browser, {});
+  const urls = await  daft.searchUrls(browser, url);
   console.log("Analyzing " + urls.length + " properties...");
   const result = [];
   for (var url of urls) {
@@ -48,14 +47,14 @@ module.exports.getSaleData = async () => {
   }
   console.log("Fetched: " + result.length + " properties");
   console.log("Skipped: " + (urls.length - result.length) + " properties");
-  await saveData(result);
+  await saveData(result, "sale");
   await browser.close();
 }
 
 
 
 
-module.exports.getSoldData = async () => {
+module.exports.getSoldData = async (url) => {
   const browser = await puppeteer.launch({headless:true});
   const pages = await daft.getSoldPages(browser, url);
   console.log("Crawling " + pages + " pages...");
@@ -71,14 +70,14 @@ module.exports.getSoldData = async () => {
       // console.error(e)
     }
   }
-  await saveData(result);
+  await saveData(result, "sold");
   await browser.close();
 }
 
 
 
 
-const saveData = async (result) => {
+const saveData = async (result, filename) => {
   if (!result.length ) return;
   const fields = Object.keys(result[0]);
   const opts = { fields };
@@ -86,8 +85,10 @@ const saveData = async (result) => {
   try {
     const parser = new Parser(opts);
     const csv = parser.parse(result);
-    console.log("Saving results in ./result.csv")
-    await fs.writeFile('result.csv', csv);
+    const output = "./result/" + (filename || "result") + ".csv"
+    console.log("Saving results in " + output)
+    await fs.mkdir("./result").catch(()=>{});
+    await fs.writeFile(output, csv);
   } catch (err) {
     console.error(err);
   }

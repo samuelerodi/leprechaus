@@ -2,12 +2,12 @@ const numeral = require('numeral');
 
 module.exports.getPhone = async (page)=>{
   return await page.evaluate(() => {
-    if ( $('.ContactForm__contactForm')[0] && $('.ContactForm__contactForm')[0].innerText.match(/Show Number/i))
+    if ( $('.ContactForm__contactForm, .ContactForm__container')[0] && $('.ContactForm__contactForm, .ContactForm__container')[0].innerText.match(/Show Number/i))
       $('.ContactForm__secondaryButton')[0].click();
     if ( $('.smi-contact-numbers')[0] && $('.smi-contact-numbers')[0].innerText.match(/Show Number/i))
       $('.smi-contact-numbers>button')[0].click();
-    if ( $('.ContactForm__contactForm,.smi-contact-numbers')[0].innerText.match(/Call[:]? (.*)/) )
-      return $('.ContactForm__contactForm,.smi-contact-numbers')[0].innerText.match(/Call[:]? (.*)/)[1]
+    if ( $('.ContactForm__contactForm, .ContactForm__container, .smi-contact-numbers')[0].innerText.match(/Call[:]? (.*)/) )
+      return $('.ContactForm__contactForm, .ContactForm__container, .smi-contact-numbers')[0].innerText.match(/Call[:]? (.*)/)[1]
   })
 }
 
@@ -36,7 +36,7 @@ module.exports.getBerRating = async (page)=>{
 }
 
 module.exports.getRentPrice = async (page)=>{
-  const p = await page.evaluate(() => $('#smi-price-string')[0].innerText)
+  const p = await page.evaluate(() => $('.PropertyInformationCommonStyles__propertyPrice')[0].innerText)
   if (p.match(/month/i))
     return numeral(p.match(/([€£$][0-9,.]*)/)[1]).value();
   if (p.match(/week/i))
