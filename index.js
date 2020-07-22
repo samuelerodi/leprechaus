@@ -1,6 +1,5 @@
 const search = require("./src");
-const url = "https://www.daft.ie/price-register/dublin-city/ballsbridge/?min_beds=%2A&max_beds=%2A&min_price=25000&max_price=5000000&pt_id=%2A&keyword=&search=Search+%BB"
-
+require('dotenv').config()
 
 const SALE_URL = process.env.SALE_URL || "";
 const SOLD_URL = process.env.SOLD_URL || "";
